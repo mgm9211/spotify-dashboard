@@ -15,6 +15,7 @@ collection = db['songs']
 # Get all songs Features and ID
 pipeline = [{
     '$project': {
+        'Date': '$ReleaseDate',
         'Acousticness': '$Features.Acousticness',
         'Danceability': '$Features.Danceability',
         'Energy': '$Features.Energy',
@@ -23,7 +24,7 @@ pipeline = [{
         'Loudness': '$Features.Loudness',
         'Speechiness': '$Features.Speechiness',
         'Tempo': '$Features.Tempo',
-        'Valence': '$Features.Tempo'
+        'Valence': '$Features.Valence'
     }
 }]
 cursor = collection.aggregate(pipeline=pipeline)
