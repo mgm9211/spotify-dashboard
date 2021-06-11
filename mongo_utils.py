@@ -34,9 +34,9 @@ def load_features_time_series():
     data = pd.DataFrame(list(cursor))
     songs_features = data.drop(['_id'], axis=1)
     # Load KMeans model trained on Google Collab
-    model = joblib.load('genres_clustering.pkl')
-    genres = model.predict(songs_features)
-    data_genre = data.copy()
-    data_genre.insert(1, 'Genre', genres)
-    print(genres.max())
+    # model = joblib.load('genres_clustering.pkl')
+    # genres = model.predict(songs_features)
+    # data_genre = data.copy()
+    # data_genre.insert(1, 'Genre', genres)
+    # print(genres.max())
     return data
