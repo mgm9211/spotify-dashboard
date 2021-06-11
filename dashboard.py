@@ -4,12 +4,11 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
+from mongo_utils import load_features_time_series
 from dash.dependencies import Input, Output, State
 
 
-data = pd.read_csv('songs.csv', engine='python')
-# Drop id to scale features
-songs_features = data.drop(['_id'], axis=1)
+songs_features = load_features_time_series()
 songs_features = songs_features.groupby('Date').mean().reset_index()
 features = ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Loudness', 'Speechiness',
                             'Tempo', 'Valence']
@@ -33,6 +32,7 @@ content = html.Div(
 )
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.layout = html.Div([content])
+
 
 if __name__ == '__main__':
     app.run_server(port=8083)

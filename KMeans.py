@@ -2,8 +2,11 @@ import pymongo
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
+import joblib
 
 
+# Cargar modelo de KMeans entrenado en Google Colab
+model = joblib.load('genres_clustering.pkl')
 # Connect with MongoDB Atlas to extract songs info
 client = pymongo.MongoClient("mongodb+srv://g4s:g4s@cluster0.hadvx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
                              ssl=True, ssl_cert_reqs='CERT_NONE')
