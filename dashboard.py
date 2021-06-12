@@ -10,8 +10,7 @@ from dash.dependencies import Input, Output, State
 
 songs_features = load_features_time_series()
 songs_features = songs_features.groupby('Date').mean().reset_index()
-features = ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Loudness', 'Speechiness',
-                            'Tempo', 'Valence']
+features = ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Speechiness', 'Valence']
 
 features_dict = [{
 'feature_name': 'Acousticness',
@@ -22,7 +21,15 @@ fig_features = go.Figure()
 for f in features:
     fig_features.add_trace(go.Scatter(name=f, x=songs_features['Date'], y=songs_features[f]))
 
+fig_features2 = go.Figure()
+fig_features2.add_trace(go.Scatter(name='Loudness', x=songs_features['Date'], y=songs_features['Loudness']))
+
+fig_features3 = go.Figure()
+fig_features3.add_trace(go.Scatter(name='Tempo', x=songs_features['Date'], y=songs_features['Tempo']))
+
 fig_features.update_xaxes(rangeslider_visible=True)
+fig_features2.update_xaxes(rangeslider_visible=True)
+fig_features3.update_xaxes(rangeslider_visible=True)
 content = html.Div(
     [
         html.H1('Spotify Data',
@@ -63,8 +70,22 @@ def render_content(tab):
                     dbc.Col(dcc.Graph(id="graph", figure=fig_features),
                             width={"size": 8, "offset": 2}),
                 ]
-            )
-        ])
+            ),
+
+        dbc.Row(
+            [
+                dbc.Col(dcc.Graph(id="graph2", figure=fig_features2),
+                        width={"size": 8, "offset": 2}),
+            ]
+        ),
+
+        dbc.Row(
+            [
+                dbc.Col(dcc.Graph(id="graph3", figure=fig_features3),
+                        width={"size": 8, "offset": 2}),
+            ]
+        )
+    ])
     elif tab == 'tab-2':
         return html.Div([
             html.H3('Poner titulito contenido TAB 1 :)',
