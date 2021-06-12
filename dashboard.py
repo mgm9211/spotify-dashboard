@@ -10,6 +10,8 @@ import numpy as np
 import plotly.express as px
 
 # songs_features, data_genres = load_features_time_series()
+from predict import predict
+
 songs_features = pd.read_csv('songs_features.csv')
 data_genre = pd.read_csv('data_genre.csv')
 songs_features = songs_features.groupby('Date').mean().round(4).reset_index()
@@ -153,7 +155,7 @@ def render_content(tab):
                         [
                             dbc.InputGroupAddon("Instrumentalness", addon_type="prepend"),
                             dbc.Input(id="instrumentalness", type="number", placeholder="Instrumentalness",
-                                      min=200, max=300, step=1, required=True),
+                                      min=0, max=1, step=0.01, required=True),
                         ],
                         className="mb-3",
                     ), width={"size": 3, "offset": 1}
@@ -202,7 +204,7 @@ def render_content(tab):
                     [
                         dbc.InputGroupAddon("Speechiness", addon_type="prepend"),
                         dbc.Input(id="speechiness", type="number", placeholder="Speechiness",
-                                  min=50, max=150, step=1, required=True),
+                                  min=0, max=1, step=0.01, required=True),
                     ],
                     className="mb-3",
                 ), width={"size": 3, "offset": -1}),
@@ -263,17 +265,22 @@ def number_render(fval, tval, rangeval):
 @app.callback(
     Output("prediction-form", "children"),
     [Input("submit-val", "n_clicks")],
-    [State("acousticness", "value"), State("danceability", "value"), State("energy", "value"),
-        State("instrumentalness", "value"), State("liveness", "value"),
-        State("loudness", "value"), State("tempo", "value"), State("valence", "value"),
-        State("speechiness", "value")],
+    [State("acousticness", "value"), State("danceability", "value"),
+     State("energy", "value"),
+     State("instrumentalness", "value"),
+     State("liveness", "value"),
+     State("loudness", "value"), State("tempo", "value"),
+     State("valence", "value"),
+     State("speechiness", "value")],
 )
 def update_output(n_clicks, v_acousticness, v_danceability, v_energy,
                   v_instrumentalness, v_liveness, v_loudness, v_tempo, v_valence, v_speechiness):
+    #Acousticness,Danceability,Energy,Instrumentalness,Liveness,Loudness,Speechiness,Tempo,Valence
     if n_clicks > 0:
-        return 'Resultado speechiness {} - {} - {} - {} - {} - {} - {} - {} - {}'.format(
-            v_acousticness, v_danceability, v_energy, v_instrumentalness,
-            v_liveness, v_loudness, v_tempo, v_valence, v_speechiness
+        print()
+        return 'Género al que pertenece {}'.format(
+            predict([[v_acousticness, v_danceability, v_energy, v_instrumentalness, v_liveness, v_loudness, v_tempo,
+                      v_valence, v_speechiness]])[0]
         )
 
 

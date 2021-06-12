@@ -1,6 +1,7 @@
 import pymongo
 import pandas as pd
 import joblib
+from predict import predict
 
 
 def load_features_time_series():
@@ -37,9 +38,7 @@ def load_features_time_series():
     data = pd.DataFrame(list(cursor))
     data_to_predict = data.drop(['_id', 'Popularity', 'Title', 'Artist(s)', 'Date'], axis=1)
     songs_features = data.drop(['_id', 'Popularity', 'Title', 'Artist(s)'], axis=1)
-    # Load KMeans model trained on Google Collab
-    model = joblib.load('genres_clustering.pkl')
-    genres = model.predict(data_to_predict)
+    genres = predict(data_to_predict)
     data_genre = data.copy()
     data_genre.insert(1, 'Genre', genres)
     songs_features.to_csv('songs_features.csv', index=False)
