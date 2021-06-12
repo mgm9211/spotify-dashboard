@@ -14,11 +14,6 @@ data_genre = pd.read_csv('data_genre.csv')
 songs_features = songs_features.groupby('Date').mean().reset_index()
 features = ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Speechiness', 'Valence']
 
-features_dict = [{
-'feature_name': 'Acousticness',
-    'min': 0,
-    'max': 3
-}]
 fig_features = go.Figure()
 for f in features:
     fig_features.add_trace(go.Scatter(name=f, x=songs_features['Date'], y=songs_features[f]))
@@ -45,6 +40,7 @@ content = html.Div(
         html.Hr(),
     ]
 )
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.layout = html.Div([
     content,
@@ -54,15 +50,6 @@ app.layout = html.Div([
     ]),
     html.Div(id='tabs-content')
 ])
-
-features_rows = []
-for feature in features_dict:
-    features_rows.append(
-        dcc.Input(
-            id=feature['feature_name'], type="number", placeholder="input with range",
-            min=feature['min'], max=feature['max'], step=3,
-
-    ))
 
 
 @app.callback(Output('tabs-content', 'children'),
@@ -109,118 +96,130 @@ def render_content(tab):
         ])
     elif tab == 'tab-2':
         return html.Div([
-            html.H3('Poner titulito contenido TAB 1 :)',
+            html.H3('Poner titulito contenido TAB 2 :)',
                     style={'textAlign': 'center'}),
             html.Hr(),
-            # Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Loudness', 'Speechiness',
-            #          'Tempo',
-            # 'Valence'
-
-                dbc.InputGroup(
+            # Acousticness, Danceability & Energy
+            dbc.Form([dbc.Row([
+                dbc.Col(dbc.InputGroup(
+                [
+                    dbc.InputGroupAddon("Acousticness", addon_type="prepend"),
+                    dbc.Input(id="acousticness", type="number", placeholder="Acousticness",
+                                      min=0, max=1, step=0.01, required=True),
+                ],
+                className="mb-3",
+                ), width={"size": 3, "offset": 1}),
+                dbc.Col(
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupAddon("Danceability", addon_type="prepend"),
+                            dbc.Input(id="danceability", type="number", placeholder="Danceability",
+                                      min=0, max=1, step=0.01, required=True),
+                        ],
+                        className="mb-3",
+                    ), width={"size": 3}
+                ),
+                dbc.Col(dbc.InputGroup(
                     [
-                        dbc.InputGroupAddon("@", addon_type="prepend"),
-                        dbc.Input(placeholder="Username"),
+                        dbc.InputGroupAddon("Energy", addon_type="prepend"),
+                        dbc.Input(id="energy", type="number", placeholder="Energy", min=0, max=1,
+                                  step=0.01, required=True),
                     ],
                     className="mb-3",
+                ), width={"size": 3, "offset": -1})
+            ]),
+            # Instrumentalness, Liveness & Loudness
+            dbc.Row([
+                dbc.Col(
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupAddon("Instrumentalness", addon_type="prepend"),
+                            dbc.Input(id="instrumentalness", type="number", placeholder="Instrumentalness",
+                                      min=200, max=300, step=1, required=True),
+                        ],
+                        className="mb-3",
+                    ), width={"size": 3, "offset": 1}
                 ),
-
-
-            dbc.Row(
-                [
-                    dbc.Col(dcc.Input(id="acousticness", type="number",
-                                      placeholder="Acousticness",
-                                      min=0, max=1, step=0.01), width={"size": 8, "offset": 2}),
-                    # dbc.Col(dcc.Input(id="dfalse", type="number", placeholder="Debounce False"),
-                    #         width={"size": 4}),
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(dcc.Input(id="danceability", type="number", placeholder="Danceability",
-                                      min=0, max=1, step=0.01), width={"size": 8, "offset": 2}),
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(dcc.Input(id="energy", type="number", placeholder="Energy",
-                                      min=0, max=1, step=0.01), width={"size": 8, "offset": 2}),
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(dcc.Input(id="instrumentalness", type="number", placeholder="Instrumentalness",
-                                      min=200, max=300, step=1), width={"size": 8, "offset": 2}),
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(dcc.Input(id="liveness", type="number", placeholder="Liveness",
-                                      min=0, max=1, step=0.01), width={"size": 8, "offset": 2}),
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(dcc.Input(id="loudness", type="number", placeholder="Loudness",
-                                      min=-60, max=0, step=1), width={"size": 8, "offset": 2}),
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(dcc.Input(id="speechiness", type="number", placeholder="Speechiness",
-                                      min=0, max=1, step=0.01), width={"size": 8, "offset": 2}),
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(dcc.Input(id="tempo", type="number", placeholder="Tempo",
-                                      min=50, max=150, step=0.01), width={"size": 8, "offset": 2}),
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(dcc.Input(id="valence", type="number", placeholder="Valence",
-                                      min=50, max=150, step=0.01), width={"size": 8, "offset": 2}),
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(dcc.Input(id="input_range2", type="number", placeholder="input with range",
-                                      min=0, max=1, step=0.01),
-                            width={"size": 8, "offset": 2}),
-                    # dbc.Col(dcc.Input(id="dfalse", type="number", placeholder="Debounce False"),
-                    #         width={"size": 4}),
-                ]
-            ),
-
-            dbc.Row(
-                dcc.Input(
-                    id="dtrue", type="number",
-                    debounce=True, placeholder="Debounce True",
+                dbc.Col(dbc.InputGroup(
+                    [
+                        dbc.InputGroupAddon("Liveness", addon_type="prepend"),
+                        dbc.Input(id="liveness", type="number", placeholder="Liveness", min=0,
+                                  max=1, step=0.01, required=True),
+                    ],
+                    className="mb-3",
+                ), width={"size": 3}),
+                dbc.Col(
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupAddon("Loudness", addon_type="prepend"),
+                            dbc.Input(id="loudness", type="number", placeholder="Loudness",
+                                      min=-60, max=0, step=1, required=True),
+                        ],
+                        className="mb-3",
+                    ), width={"size": 3, "offset": -1}
                 )
-            ),
-            dbc.Row(
-                dcc.Input(
-                    id="input_range", type="number", placeholder="input with range",
-                    min=10, max=100, step=3,
-                )
-            ),
-            # dbc.Row(features_rows),
-            # features_rows,
+            ]),
+
+            # Tempo, Valence & Speechiness
+            dbc.Row([
+                dbc.Col(dbc.InputGroup(
+                    [
+                        dbc.InputGroupAddon("Tempo", addon_type="prepend"),
+                        dbc.Input(id="tempo", type="number", placeholder="Tempo", min=50, max=150,
+                                  step=1, required=True),
+                    ],
+                    className="mb-3",
+                ), width={"size": 3, "offset": 1}),
+                dbc.Col(
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupAddon("Valence", addon_type="prepend"),
+                            dbc.Input(id="valence", type="number", placeholder="Valence", min=0,
+                                      max=1, step=0.01, required=True),
+                        ],
+                        className="mb-3",
+                    ), width={"size": 3}
+                ),
+                dbc.Col(dbc.InputGroup(
+                    [
+                        dbc.InputGroupAddon("Speechiness", addon_type="prepend"),
+                        dbc.Input(id="speechiness", type="number", placeholder="Speechiness",
+                                  min=50, max=150, step=1, required=True),
+                    ],
+                    className="mb-3",
+                ), width={"size": 3, "offset": -1}),
+            ]),
+
+            dbc.Row([
+                dbc.Col(
+                    dbc.Button("Enviar", color="warning", className="mr-1", id='submit-val',
+                               size='md'), width={"size": 4, "offset": 5})
+                ]
+            )]),
             html.Hr(),
-            html.Div(id="number-out"),
         ])
-
 
 @app.callback(
     Output("number-out", "children"),
-    Input("input_range2", "value"),
     Input("dfalse", "value"),
     Input("dtrue", "value"),
     Input("input_range", "value"),
 )
 
-def number_render(fval, prueba, tval, rangeval):
-    return "dfalse: {}, input_range2: {}, dtrue: {}, range: {}".format(fval, tval, prueba, rangeval)
+def number_render(fval, tval, rangeval):
+    return "dfalse: {}, dtrue: {}, range: {}".format(fval, tval, rangeval)
+
+
+# Botón enviar formulario
+@app.callback(
+    dash.dependencies.Output('container-button-basic', 'children'),
+    [dash.dependencies.Input('submit-val', 'n_clicks')],
+    [dash.dependencies.State('input-on-submit', 'value')])
+def update_output(n_clicks, value):
+    return 'The input value was "{}" and the button has been clicked {} times'.format(
+        value,
+        n_clicks
+    )
 
 
 if __name__ == '__main__':
