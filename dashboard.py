@@ -6,7 +6,8 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from mongo_utils import load_features_time_series
 from dash.dependencies import Input, Output, State
-
+import numpy as np
+import plotly.express as px
 
 # songs_features, data_genres = load_features_time_series()
 songs_features = pd.read_csv('songs_features.csv')
@@ -33,6 +34,21 @@ fig_features3.add_trace(go.Scatter(name='Tempo', x=songs_features['Date'], y=son
 fig_features.update_xaxes(rangeslider_visible=True)
 fig_features2.update_xaxes(rangeslider_visible=True)
 fig_features3.update_xaxes(rangeslider_visible=True)
+
+genres = np.unique(data_genre['Genre'].tolist())
+aux_data = data_genre[['Genre', 'Title', 'Artist(s)']]
+aux_data.loc[:, 'Artist(s)'] = aux_data['Artist(s)'].apply(lambda x: x.strip('[').strip(']').strip('"'))
+tab_3_rows = []
+for g in genres:
+    g_data = aux_data[aux_data['Genre'] == g]
+    table = dbc.Table.from_dataframe(g_data.tail(4), striped=True, hover=True)
+    tab_3_rows.append(dbc.Row([
+        dbc.Col(table, width={"size": 4, "offset": 1}),
+    ]))
+    tab_3_rows.append(html.Br())
+
+grouped_data = data_genre.groupby('Genre').mean().reset_index()
+
 content = html.Div(
     [
         html.H1('Spotify Data',
@@ -40,6 +56,7 @@ content = html.Div(
         html.Hr(),
     ]
 )
+
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.layout = html.Div([
@@ -47,6 +64,7 @@ app.layout = html.Div([
     dcc.Tabs(id="tabs", value='tab-1', children=[
         dcc.Tab(label='Tab Gráficas - Poner título', value='tab-1'),
         dcc.Tab(label='Tab Gráficas - Poner título', value='tab-2'),
+        dcc.Tab(label='Tab Clusters', value='tab-3'),
     ]),
     html.Div(id='tabs-content')
 ])
@@ -198,6 +216,28 @@ def render_content(tab):
             )]),
             html.Hr(),
         ])
+    elif tab == 'tab-3':
+        return html.Div([
+            dbc.Row(
+                [
+                    dbc.Col(dcc.Dropdown(
+                        id="dropdown",
+                        options=[{"label": x, "value": x} for x in genres],
+                        value=genres[0],
+                        clearable=False,
+                    ),
+                        width={"size": 4, "offset": 1})
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(dcc.Graph(id="bar-chart"),
+                            width={"size": 8, "offset": 1}),
+                ]
+            ),
+
+        ])
+
 
 @app.callback(
     Output("number-out", "children"),
@@ -205,7 +245,6 @@ def render_content(tab):
     Input("dtrue", "value"),
     Input("input_range", "value"),
 )
-
 def number_render(fval, tval, rangeval):
     return "dfalse: {}, dtrue: {}, range: {}".format(fval, tval, rangeval)
 
@@ -220,6 +259,28 @@ def update_output(n_clicks, value):
         value,
         n_clicks
     )
+
+
+
+@app.callback(
+    Output("bar-chart", "figure"),
+    [Input("dropdown", "value")])
+def update_bar_chart(genre):
+    values = grouped_data[grouped_data['Genre'] == genre]
+    values = values[features]
+    data_dict = {
+        'Feature': [],
+        'Value': []
+    }
+    for c in values.columns:
+        data_dict['Feature'].append(c)
+        data_dict['Value'].append(values[c].values[0])
+
+    df = pd.DataFrame(data=data_dict, columns=['Feature', 'Value'])
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=df['Feature'], y=df['Value'], marker_color=px.colors.qualitative.Pastel1))
+
+    return fig
 
 
 if __name__ == '__main__':
