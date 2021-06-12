@@ -75,7 +75,7 @@ def render_content(tab):
             # 'Valence'
             dbc.Row(
                 [
-                    dbc.Col(dcc.Input(id="acousticness", type="number", 
+                    dbc.Col(dcc.Input(id="acousticness", type="number",
                                       placeholder="Acousticness",
                                       min=0, max=1, step=0.01), width={"size": 8, "offset": 2}),
                     # dbc.Col(dcc.Input(id="dfalse", type="number", placeholder="Debounce False"),
