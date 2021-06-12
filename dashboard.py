@@ -76,7 +76,7 @@ def render_content(tab):
     if tab == 'tab-1':
         return html.Div([
             html.H3('Poner titulito contenido TAB 1 :)',
-                    style={'textAlign': 'center'}),
+                    style={'textAlign': 'center', 'margin-top': '15px'}),
             html.Hr(),
             dbc.Row(
                 [
@@ -115,7 +115,7 @@ def render_content(tab):
     elif tab == 'tab-2':
         return html.Div([
             html.H3('Poner titulito contenido TAB 2 :)',
-                    style={'textAlign': 'center'}),
+                    style={'textAlign': 'center', 'margin-top': '15px'}),
             html.Hr(),
             # Acousticness, Danceability & Energy
             dbc.Form([dbc.Row([
@@ -215,9 +215,14 @@ def render_content(tab):
                 ]
             )]),
             html.Hr(),
+            html.H5('Resultados obtenidos:',
+                    style={'textAlign': 'center'}, id='prediction-form'),
         ])
     elif tab == 'tab-3':
         return html.Div([
+            html.H3('Clusters :)',
+                    style={'textAlign': 'center', 'margin-top': '15px'}),
+            html.Hr(),
             dbc.Row(
                 [
                     dbc.Col(dcc.Dropdown(
@@ -251,15 +256,20 @@ def number_render(fval, tval, rangeval):
 
 # Botón enviar formulario
 @app.callback(
-    dash.dependencies.Output('container-button-basic', 'children'),
-    [dash.dependencies.Input('submit-val', 'n_clicks')],
-    [dash.dependencies.State('input-on-submit', 'value')])
-def update_output(n_clicks, value):
-    return 'The input value was "{}" and the button has been clicked {} times'.format(
-        value,
-        n_clicks
-    )
-
+    Output("prediction-form", "children"),
+    [Input("submit-val", "n_clicks")],
+    [State("acousticness", "value"), State("danceability", "value"), State("energy", "value"),
+        State("instrumentalness", "value"), State("liveness", "value"),
+        State("loudness", "value"), State("tempo", "value"), State("valence", "value"),
+        State("speechiness", "value")],
+)
+def update_output(n_clicks, v_acousticness, v_danceability, v_energy,
+                  v_instrumentalness, v_liveness, v_loudness, v_tempo, v_valence, v_speechiness):
+    if n_clicks > 0:
+        return 'Resultado speechiness {} - {} - {} - {} - {} - {} - {} - {} - {}'.format(
+            v_acousticness, v_danceability, v_energy, v_instrumentalness,
+            v_liveness, v_loudness, v_tempo, v_valence, v_speechiness
+        )
 
 
 @app.callback(
