@@ -94,6 +94,16 @@ def render_content(tab):
             # Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Loudness', 'Speechiness',
             #          'Tempo',
             # 'Valence'
+
+                dbc.InputGroup(
+                    [
+                        dbc.InputGroupAddon("@", addon_type="prepend"),
+                        dbc.Input(placeholder="Username"),
+                    ],
+                    className="mb-3",
+                ),
+
+
             dbc.Row(
                 [
                     dbc.Col(dcc.Input(id="acousticness", type="number",
