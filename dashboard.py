@@ -12,7 +12,7 @@ import plotly.express as px
 # songs_features, data_genres = load_features_time_series()
 songs_features = pd.read_csv('songs_features.csv')
 data_genre = pd.read_csv('data_genre.csv')
-songs_features = songs_features.groupby('Date').mean().reset_index()
+songs_features = songs_features.groupby('Date').mean().round(4).reset_index()
 features = ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Speechiness', 'Valence']
 
 fig_features = go.Figure()
@@ -47,7 +47,7 @@ for g in genres:
     ]))
     tab_3_rows.append(html.Br())
 
-grouped_data = data_genre.groupby('Genre').mean().reset_index()
+grouped_data = data_genre.groupby('Genre').mean().round(4).reset_index()
 
 content = html.Div(
     [
@@ -231,7 +231,7 @@ def render_content(tab):
                         value=genres[0],
                         clearable=False,
                     ),
-                        width={"size": 4, "offset": 1})
+                        width={"size": 2, "offset": 1})
                 ]
             ),
             dbc.Row(
@@ -240,6 +240,11 @@ def render_content(tab):
                             width={"size": 8, "offset": 1}),
                 ]
             ),
+            dbc.Row(
+                [
+                    dbc.Col(id="genre-table", width={"size": 8, "offset": 1}),
+                ]
+            )
 
         ])
 
@@ -274,6 +279,7 @@ def update_output(n_clicks, v_acousticness, v_danceability, v_energy,
 
 @app.callback(
     Output("bar-chart", "figure"),
+    Output("genre-table", "children"),
     [Input("dropdown", "value")])
 def update_bar_chart(genre):
     values = grouped_data[grouped_data['Genre'] == genre]
@@ -290,8 +296,7 @@ def update_bar_chart(genre):
     fig = go.Figure()
     fig.add_trace(go.Bar(x=df['Feature'], y=df['Value'], marker_color=px.colors.qualitative.Pastel1))
 
-    return fig
-
+    return fig, dbc.Table.from_dataframe(aux_data[aux_data['Genre'] == genre].head(4), striped=True, hover=True)
 
 if __name__ == '__main__':
     app.run_server(port=8083, debug=True)
