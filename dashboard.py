@@ -8,7 +8,9 @@ from mongo_utils import load_features_time_series
 from dash.dependencies import Input, Output, State
 
 
-songs_features = load_features_time_series()
+# songs_features, data_genres = load_features_time_series()
+songs_features = pd.read_csv('songs_features.csv')
+data_genre = pd.read_csv('data_genre.csv')
 songs_features = songs_features.groupby('Date').mean().reset_index()
 features = ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Speechiness', 'Valence']
 
@@ -22,10 +24,16 @@ for f in features:
     fig_features.add_trace(go.Scatter(name=f, x=songs_features['Date'], y=songs_features[f]))
 
 fig_features2 = go.Figure()
-fig_features2.add_trace(go.Scatter(name='Loudness', x=songs_features['Date'], y=songs_features['Loudness']))
+fig_features2.add_trace(go.Scatter(name='Loudness', x=songs_features['Date'], y=songs_features['Loudness'],
+                                   marker=dict(
+                                       color='#e377c2',
+                                   )))
 
 fig_features3 = go.Figure()
-fig_features3.add_trace(go.Scatter(name='Tempo', x=songs_features['Date'], y=songs_features['Tempo']))
+fig_features3.add_trace(go.Scatter(name='Tempo', x=songs_features['Date'], y=songs_features['Tempo'],
+                                   marker=dict(
+                                        color='#ff7f0e',
+                                        )))
 
 fig_features.update_xaxes(rangeslider_visible=True)
 fig_features2.update_xaxes(rangeslider_visible=True)
@@ -67,25 +75,38 @@ def render_content(tab):
             html.Hr(),
             dbc.Row(
                 [
+                    dbc.Col(html.H3('Features'), width={"size": 8, "offset": 2}),
+                ]
+            ),
+            dbc.Row(
+                [
                     dbc.Col(dcc.Graph(id="graph", figure=fig_features),
                             width={"size": 8, "offset": 2}),
                 ]
             ),
-
-        dbc.Row(
-            [
-                dbc.Col(dcc.Graph(id="graph2", figure=fig_features2),
-                        width={"size": 8, "offset": 2}),
-            ]
-        ),
-
-        dbc.Row(
-            [
-                dbc.Col(dcc.Graph(id="graph3", figure=fig_features3),
-                        width={"size": 8, "offset": 2}),
-            ]
-        )
-    ])
+            dbc.Row(
+                [
+                    dbc.Col(html.H3('Loudness'), width={"size": 8, "offset": 2}),
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(dcc.Graph(id="graph2", figure=fig_features2),
+                            width={"size": 8, "offset": 2}),
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(html.H3('Tempo'), width={"size": 8, "offset": 2}),
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(dcc.Graph(id="graph3", figure=fig_features3),
+                            width={"size": 8, "offset": 2}),
+                ]
+            )
+        ])
     elif tab == 'tab-2':
         return html.Div([
             html.H3('Poner titulito contenido TAB 1 :)',

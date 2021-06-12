@@ -17,6 +17,9 @@ def load_features_time_series():
     pipeline = [{
         '$project': {
             'Date': '$ReleaseDate',
+            'Popularity': '$Popularity',
+            'Title': '$Title',
+            'Artist(s)': '$Artists',
             'Acousticness': '$Features.Acousticness',
             'Danceability': '$Features.Danceability',
             'Energy': '$Features.Energy',
@@ -32,11 +35,13 @@ def load_features_time_series():
 
     # Create Dataframe structure to save songs info
     data = pd.DataFrame(list(cursor))
-    songs_features = data.drop(['_id'], axis=1)
+    data_to_predict = data.drop(['_id', 'Popularity', 'Title', 'Artist(s)', 'Date'], axis=1)
+    songs_features = data.drop(['_id', 'Popularity', 'Title', 'Artist(s)'], axis=1)
     # Load KMeans model trained on Google Collab
-    # model = joblib.load('genres_clustering.pkl')
-    # genres = model.predict(songs_features)
-    # data_genre = data.copy()
-    # data_genre.insert(1, 'Genre', genres)
-    # print(genres.max())
-    return data
+    model = joblib.load('genres_clustering.pkl')
+    genres = model.predict(data_to_predict)
+    data_genre = data.copy()
+    data_genre.insert(1, 'Genre', genres)
+    songs_features.to_csv('songs_features.csv', index=False)
+    data_genre.to_csv('data_genre.csv', index=False)
+    return songs_features, data_genre
