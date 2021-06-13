@@ -9,13 +9,10 @@ from dash.dependencies import Input, Output, State
 import numpy as np
 import plotly.express as px
 from math import sqrt
-
-
-# songs_features, data_genres = load_features_time_series()
 from predict import predict
 
-songs_features = pd.read_csv('songs_features.csv')
-data_genre = pd.read_csv('data_genre.csv')
+
+songs_features, data_genres = load_features_time_series()
 songs_features = songs_features.groupby('Date').mean().round(4).reset_index()
 features = ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Speechiness', 'Valence']
 ######## PREPARANDO TAB 1 ########
@@ -74,7 +71,7 @@ app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.layout = html.Div([
     content,
     dcc.Tabs(id="tabs", value='tab-1', children=[
-        dcc.Tab(label='Series temporales de Features', value='tab-1'),
+        dcc.Tab(label='Series temporales de las características', value='tab-1'),
         dcc.Tab(label='Clusterización de una nueva canción', value='tab-2'),
         dcc.Tab(label='Análisis de clusters', value='tab-3'),
         dcc.Tab(label='Comparación de clusters', value='tab-4'),
@@ -380,4 +377,4 @@ def update_bar_chart(feature):
 
 
 if __name__ == '__main__':
-    app.run_server(port=8083, debug=True)
+    app.run_server(port=8083)
