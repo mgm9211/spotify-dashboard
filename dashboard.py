@@ -12,7 +12,7 @@ from math import sqrt
 from predict import predict
 
 
-songs_features, data_genres = load_features_time_series()
+songs_features, data_genre = load_features_time_series()
 songs_features = songs_features.groupby('Date').mean().round(4).reset_index()
 features = ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Speechiness', 'Valence']
 ######## PREPARANDO TAB 1 ########
@@ -40,7 +40,7 @@ fig_features3.update_xaxes(rangeslider_visible=True)
 ######## PREPARANDO TAB 3 ########
 genres = np.unique(data_genre['Genre'].tolist())
 aux_data = data_genre[['Genre', 'Title', 'Artist(s)']]
-aux_data.loc[:, 'Artist(s)'] = aux_data['Artist(s)'].apply(lambda x: x.strip('[').strip(']').strip('"'))
+aux_data.loc[:, 'Artist(s)'] = aux_data['Artist(s)'].apply(lambda x: ', '.join(x))
 tab_3_rows = []
 for g in genres:
     g_data = aux_data[aux_data['Genre'] == g]
