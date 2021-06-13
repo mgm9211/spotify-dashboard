@@ -8,6 +8,8 @@ from mongo_utils import load_features_time_series
 from dash.dependencies import Input, Output, State
 import numpy as np
 import plotly.express as px
+from math import sqrt
+
 
 # songs_features, data_genres = load_features_time_series()
 from predict import predict
@@ -16,7 +18,7 @@ songs_features = pd.read_csv('songs_features.csv')
 data_genre = pd.read_csv('data_genre.csv')
 songs_features = songs_features.groupby('Date').mean().round(4).reset_index()
 features = ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Speechiness', 'Valence']
-
+######## PREPARANDO TAB 1 ########
 fig_features = go.Figure()
 for f in features:
     fig_features.add_trace(go.Scatter(name=f, x=songs_features['Date'], y=songs_features[f]))
@@ -30,13 +32,15 @@ fig_features2.add_trace(go.Scatter(name='Loudness', x=songs_features['Date'], y=
 fig_features3 = go.Figure()
 fig_features3.add_trace(go.Scatter(name='Tempo', x=songs_features['Date'], y=songs_features['Tempo'],
                                    marker=dict(
-                                        color='#ff7f0e',
-                                        )))
+                                       color='#ff7f0e',
+                                   )))
 
 fig_features.update_xaxes(rangeslider_visible=True)
 fig_features2.update_xaxes(rangeslider_visible=True)
 fig_features3.update_xaxes(rangeslider_visible=True)
+######## PREPARANDO TAB 1 ########
 
+######## PREPARANDO TAB 3 ########
 genres = np.unique(data_genre['Genre'].tolist())
 aux_data = data_genre[['Genre', 'Title', 'Artist(s)']]
 aux_data.loc[:, 'Artist(s)'] = aux_data['Artist(s)'].apply(lambda x: x.strip('[').strip(']').strip('"'))
@@ -50,6 +54,12 @@ for g in genres:
     tab_3_rows.append(html.Br())
 
 grouped_data = data_genre.groupby('Genre').mean().round(4).reset_index()
+######## PREPARANDO TAB 4 ########
+all_features = ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Speechiness', 'Valence',
+                'Tempo', 'Loudness']
+genres_size = data_genre.groupby('Genre').size().reset_index()
+genres_size[0] = genres_size[0].apply(sqrt)
+######## PREPARANDO TAB 4 ########
 
 content = html.Div(
     [
@@ -64,9 +74,10 @@ app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.layout = html.Div([
     content,
     dcc.Tabs(id="tabs", value='tab-1', children=[
-        dcc.Tab(label='Tab Gráficas - Poner título', value='tab-1'),
-        dcc.Tab(label='Tab Gráficas - Poner título', value='tab-2'),
-        dcc.Tab(label='Tab Clusters', value='tab-3'),
+        dcc.Tab(label='Series temporales de Features', value='tab-1'),
+        dcc.Tab(label='Clusterización de una nueva canción', value='tab-2'),
+        dcc.Tab(label='Análisis de clusters', value='tab-3'),
+        dcc.Tab(label='Comparación de clusters', value='tab-4'),
     ]),
     html.Div(id='tabs-content')
 ])
@@ -77,7 +88,7 @@ app.layout = html.Div([
 def render_content(tab):
     if tab == 'tab-1':
         return html.Div([
-            html.H3('Poner titulito contenido TAB 1 :)',
+            html.H3('Evolución de Features a lo largo del tiempo',
                     style={'textAlign': 'center', 'margin-top': '15px'}),
             html.Hr(),
             dbc.Row(
@@ -116,7 +127,7 @@ def render_content(tab):
         ])
     elif tab == 'tab-2':
         return html.Div([
-            html.H3('Poner titulito contenido TAB 2 :)',
+            html.H3('Introduzca las características de la canción',
                     style={'textAlign': 'center', 'margin-top': '15px'}),
             html.Hr(),
             # Acousticness, Danceability & Energy
@@ -222,7 +233,7 @@ def render_content(tab):
         ])
     elif tab == 'tab-3':
         return html.Div([
-            html.H3('Clusters :)',
+            html.H3('Características agrupadas por Cluster',
                     style={'textAlign': 'center', 'margin-top': '15px'}),
             html.Hr(),
             dbc.Row(
@@ -248,6 +259,36 @@ def render_content(tab):
                 ]
             )
 
+        ])
+    elif tab == 'tab-4':
+        return html.Div([
+            html.H3('Comparación de características entre clusters', style={'textAlign': 'center', 'margin-top': '15px'}),
+            html.Hr(),
+            dbc.Row(
+                [
+                    dbc.Col(dcc.Dropdown(
+                        id="dropdownF",
+                        options=[{"label": x, "value": x} for x in all_features],
+                        value=all_features[0],
+                        clearable=False,
+                    ),
+                        width={"size": 2, "offset": 1})
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(dcc.Graph(id="box-plot"),
+                            width={"size": 10, "offset": 1}),
+                ]
+            ),
+            html.H3('Popularidad :)', style={'textAlign': 'center', 'margin-top': '15px'}),
+            html.Hr(),
+            dbc.Row(
+                [
+                    dbc.Col(dcc.Graph(id="bubble-plot"),
+                            width={"size": 10, "offset": 1}),
+                ]
+            ),
         ])
 
 
@@ -275,12 +316,12 @@ def number_render(fval, tval, rangeval):
 )
 def update_output(n_clicks, v_acousticness, v_danceability, v_energy,
                   v_instrumentalness, v_liveness, v_loudness, v_tempo, v_valence, v_speechiness):
-    #Acousticness,Danceability,Energy,Instrumentalness,Liveness,Loudness,Speechiness,Tempo,Valence
     if n_clicks > 0:
         print()
         return 'Género al que pertenece {}'.format(
-            predict([[v_acousticness, v_danceability, v_energy, v_instrumentalness, v_liveness, v_loudness, v_speechiness,
-                      v_tempo, v_valence]])[0]
+            predict(
+                [[v_acousticness, v_danceability, v_energy, v_instrumentalness, v_liveness, v_loudness, v_speechiness,
+                  v_tempo, v_valence]])[0]
         )
 
 
@@ -304,6 +345,38 @@ def update_bar_chart(genre):
     fig.add_trace(go.Bar(x=df['Feature'], y=df['Value'], marker_color=px.colors.qualitative.Pastel1))
 
     return fig, dbc.Table.from_dataframe(aux_data[aux_data['Genre'] == genre].head(4), striped=True, hover=True)
+
+
+@app.callback(
+    Output("box-plot", "figure"),
+    Output("bubble-plot", "figure"),
+    [Input("dropdownF", "value")])
+def update_bar_chart(feature):
+    fig = go.Figure()
+    bubble_fig = go.Figure()
+    for genre in np.unique(data_genre['Genre'].tolist()):
+        fig.add_trace(go.Box(y=data_genre[data_genre['Genre'] == genre][feature], name=str(genre)))
+        bubble_fig.add_trace(go.Scatter(x=grouped_data[grouped_data['Genre'] == genre]['Popularity'],
+                                        y=grouped_data[grouped_data['Genre'] == genre][feature], name=str(genre),
+                                        marker_size=genres_size[grouped_data['Genre'] == genre][0]))
+
+    fig.update_layout(
+        xaxis=dict(
+            title='Clusters',
+        ),
+        yaxis=dict(
+            title=feature,
+        )
+    )
+    bubble_fig.update_layout(
+        xaxis=dict(
+            title='Popularity',
+        ),
+        yaxis=dict(
+            title=feature,
+        )
+    )
+    return fig, bubble_fig
 
 
 if __name__ == '__main__':

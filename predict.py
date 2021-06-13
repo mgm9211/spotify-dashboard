@@ -1,6 +1,5 @@
 import joblib
 
-
 model = joblib.load('genres_clustering.pkl')
 
 
