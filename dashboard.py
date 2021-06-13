@@ -125,7 +125,7 @@ def render_content(tab):
                 [
                     dbc.InputGroupAddon("Acousticness", addon_type="prepend"),
                     dbc.Input(id="acousticness", type="number", placeholder="Acousticness",
-                                      min=0, max=1, step=0.01, required=True),
+                                      min=0, max=1, step=0.0001, required=True),
                 ],
                 className="mb-3",
                 ), width={"size": 3, "offset": 1}),
@@ -134,7 +134,7 @@ def render_content(tab):
                         [
                             dbc.InputGroupAddon("Danceability", addon_type="prepend"),
                             dbc.Input(id="danceability", type="number", placeholder="Danceability",
-                                      min=0, max=1, step=0.01, required=True),
+                                      min=0, max=1, step=0.0001, required=True),
                         ],
                         className="mb-3",
                     ), width={"size": 3}
@@ -143,7 +143,7 @@ def render_content(tab):
                     [
                         dbc.InputGroupAddon("Energy", addon_type="prepend"),
                         dbc.Input(id="energy", type="number", placeholder="Energy", min=0, max=1,
-                                  step=0.01, required=True),
+                                  step=0.0001, required=True),
                     ],
                     className="mb-3",
                 ), width={"size": 3, "offset": -1})
@@ -155,7 +155,7 @@ def render_content(tab):
                         [
                             dbc.InputGroupAddon("Instrumentalness", addon_type="prepend"),
                             dbc.Input(id="instrumentalness", type="number", placeholder="Instrumentalness",
-                                      min=0, max=1, step=0.01, required=True),
+                                      min=0, max=1, step=0.0001, required=True),
                         ],
                         className="mb-3",
                     ), width={"size": 3, "offset": 1}
@@ -164,7 +164,7 @@ def render_content(tab):
                     [
                         dbc.InputGroupAddon("Liveness", addon_type="prepend"),
                         dbc.Input(id="liveness", type="number", placeholder="Liveness", min=0,
-                                  max=1, step=0.01, required=True),
+                                  max=1, step=0.0001, required=True),
                     ],
                     className="mb-3",
                 ), width={"size": 3}),
@@ -173,7 +173,7 @@ def render_content(tab):
                         [
                             dbc.InputGroupAddon("Loudness", addon_type="prepend"),
                             dbc.Input(id="loudness", type="number", placeholder="Loudness",
-                                      min=-60, max=0, step=1, required=True),
+                                      min=-60, max=0, step=0.0001, required=True),
                         ],
                         className="mb-3",
                     ), width={"size": 3, "offset": -1}
@@ -186,7 +186,7 @@ def render_content(tab):
                     [
                         dbc.InputGroupAddon("Tempo", addon_type="prepend"),
                         dbc.Input(id="tempo", type="number", placeholder="Tempo", min=50, max=150,
-                                  step=1, required=True),
+                                  step=0.0001, required=True),
                     ],
                     className="mb-3",
                 ), width={"size": 3, "offset": 1}),
@@ -195,7 +195,7 @@ def render_content(tab):
                         [
                             dbc.InputGroupAddon("Valence", addon_type="prepend"),
                             dbc.Input(id="valence", type="number", placeholder="Valence", min=0,
-                                      max=1, step=0.01, required=True),
+                                      max=1, step=0.0001, required=True),
                         ],
                         className="mb-3",
                     ), width={"size": 3}
@@ -204,7 +204,7 @@ def render_content(tab):
                     [
                         dbc.InputGroupAddon("Speechiness", addon_type="prepend"),
                         dbc.Input(id="speechiness", type="number", placeholder="Speechiness",
-                                  min=0, max=1, step=0.01, required=True),
+                                  min=0, max=1, step=0.0001, required=True),
                     ],
                     className="mb-3",
                 ), width={"size": 3, "offset": -1}),
