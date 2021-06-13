@@ -279,8 +279,8 @@ def update_output(n_clicks, v_acousticness, v_danceability, v_energy,
     if n_clicks > 0:
         print()
         return 'Género al que pertenece {}'.format(
-            predict([[v_acousticness, v_danceability, v_energy, v_instrumentalness, v_liveness, v_loudness, v_tempo,
-                      v_valence, v_speechiness]])[0]
+            predict([[v_acousticness, v_danceability, v_energy, v_instrumentalness, v_liveness, v_loudness, v_speechiness,
+                      v_tempo, v_valence]])[0]
         )
 
 
@@ -304,6 +304,7 @@ def update_bar_chart(genre):
     fig.add_trace(go.Bar(x=df['Feature'], y=df['Value'], marker_color=px.colors.qualitative.Pastel1))
 
     return fig, dbc.Table.from_dataframe(aux_data[aux_data['Genre'] == genre].head(4), striped=True, hover=True)
+
 
 if __name__ == '__main__':
     app.run_server(port=8083, debug=True)
