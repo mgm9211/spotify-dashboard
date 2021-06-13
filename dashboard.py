@@ -281,7 +281,7 @@ def render_content(tab):
                             width={"size": 10, "offset": 1}),
                 ]
             ),
-            html.H3('Popularidad :)', style={'textAlign': 'center', 'margin-top': '15px'}),
+            html.H3('Popularidad por Feature', style={'textAlign': 'center', 'margin-top': '15px'}),
             html.Hr(),
             dbc.Row(
                 [
